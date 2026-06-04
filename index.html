@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SESMT — Painel de Projetos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2333;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(255,255,255,0.15);
+    --text: #e8eaf0;
+    --muted: #7a7f96;
+    --accent-green: #00e5a0;
+    --accent-blue: #4d9fff;
+    --accent-amber: #ffb84d;
+    --accent-purple: #a78bfa;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    background-image:
+      radial-gradient(ellipse 60% 50% at 20% 10%, rgba(0,229,160,0.04) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 80% 90%, rgba(77,159,255,0.05) 0%, transparent 70%);
+  }
+
+  .container {
+    width: 100%;
+    max-width: 780px;
+  }
+
+  header {
+    margin-bottom: 3rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .logo-badge {
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, #00e5a0 0%, #4d9fff 100%);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+    color: #0f1117;
+    letter-spacing: 0.5px;
+  }
+
+  .header-text h1 {
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+
+  .header-text p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 3px;
+    font-family: var(--mono);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-bottom: 2rem;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.4rem;
+    text-decoration: none;
+    display: block;
+    transition: border-color 0.2s, transform 0.18s, background 0.2s;
+    animation: fadeUp 0.5s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .card:hover {
+    border-color: var(--border-hover);
+    background: var(--surface2);
+    transform: translateY(-2px);
+  }
+
+  .card:hover::before { opacity: 1; }
+
+  .card-1 { animation-delay: 0.1s; }
+  .card-2 { animation-delay: 0.18s; }
+  .card-3 { animation-delay: 0.26s; }
+
+  .card-1::before { background: linear-gradient(90deg, var(--accent-green), transparent); }
+  .card-2::before { background: linear-gradient(90deg, var(--accent-blue), transparent); }
+  .card-3::before { background: linear-gradient(90deg, var(--accent-amber), transparent); }
+
+  .card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    font-size: 19px;
+  }
+
+  .icon-green { background: rgba(0,229,160,0.1); color: var(--accent-green); }
+  .icon-blue  { background: rgba(77,159,255,0.1); color: var(--accent-blue); }
+  .icon-amber { background: rgba(255,184,77,0.1); color: var(--accent-amber); }
+
+  .card-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  .tag-green { background: rgba(0,229,160,0.1); color: var(--accent-green); }
+  .tag-blue  { background: rgba(77,159,255,0.1); color: var(--accent-blue); }
+  .tag-amber { background: rgba(255,184,77,0.1); color: var(--accent-amber); }
+
+  .card h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    letter-spacing: -0.2px;
+  }
+
+  .card p {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 1.2rem;
+  }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+
+  .card-footer svg { flex-shrink: 0; }
+
+  .github-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0.75rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 13px;
+    transition: border-color 0.2s, color 0.2s;
+    animation: fadeUp 0.5s 0.35s ease both;
+  }
+
+  .github-link:hover {
+    border-color: var(--border-hover);
+    color: var(--text);
+  }
+
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 3px;
+    vertical-align: middle;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 500px) {
+    .grid { grid-template-columns: 1fr; }
+    header { flex-direction: column; gap: 0.75rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="logo-badge">SESMT</div>
+    <div class="header-text">
+      <h1>Painel de Projetos</h1>
+      <p>anjossidnei-code · github.com</p>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <a class="card card-1" href="https://github.com/anjossidnei-code/pgr-vipol-2026" target="_blank">
+      <div class="card-icon icon-green">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <span class="card-tag tag-green">PGR · 2026</span>
+      <h2>VIPOL</h2>
+      <p>Programa de Gerenciamento de Risco<br>VIPOL Transportes Rodoviários Ltda.</p>
+      <div class="card-footer">
+        <span class="dot" style="background:#f1c453;"></span> HTML
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </div>
+    </a>
+
+    <a class="card card-2" href="https://github.com/anjossidnei-code/pgr-vmp-2026" target="_blank">
+      <div class="card-icon icon-blue">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <span class="card-tag tag-blue">PGR · 2026</span>
+      <h2>VMP</h2>
+      <p>Programa de Gerenciamento de Risco<br>Viação Metrópole Paulista</p>
+      <div class="card-footer">
+        <span class="dot" style="background:#f1c453;"></span> HTML
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </div>
+    </a>
+
+    <a class="card card-3" href="https://github.com/anjossidnei-code/aep-vmp" target="_blank">
+      <div class="card-icon icon-amber">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+      </div>
+      <span class="card-tag tag-amber">AEP</span>
+      <h2>Ergonomia · VMP</h2>
+      <p>Análise Ergonômica Preliminar<br>Viação Metrópole Paulista</p>
+      <div class="card-footer">
+        <span class="dot" style="background:#f1c453;"></span> HTML
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left:auto"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      </div>
+    </a>
+
+  </div>
+
+  <a class="github-link" href="https://github.com/anjossidnei-code" target="_blank">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+    Ver todos os repositórios em github.com/anjossidnei-code
+  </a>
+
+</div>
+
+</body>
+</html>
