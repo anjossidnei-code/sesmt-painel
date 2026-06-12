@@ -4,26 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SESMT — Painel de Projetos</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #080d16;
-  --surface: #0f1521;
-  --surface2: #161e30;
-  --border: rgba(255,255,255,0.06);
-  --border-h: rgba(255,255,255,0.13);
-  --text: #e8edf8;
+  --bg: #070b13;
+  --bg2: #0a1019;
+  --surface: #0e1521;
+  --surface2: #131c2b;
+  --surface3: #18243a;
+  --border: rgba(255,255,255,0.07);
+  --border-h: rgba(255,255,255,0.16);
+  --text: #eef2fb;
+  --text2: #aeb8d0;
   --muted: #6b7494;
-  --green: #00e5a0;
+  --green: #15e0a0;
   --blue: #4d9fff;
-  --amber: #ffb84d;
-  --purple: #a78bfa;
+  --amber: #ffb347;
+  --purple: #b08cff;
   --font: 'DM Sans', sans-serif;
-  --display: 'Syne', sans-serif;
+  --display: 'Space Grotesk', sans-serif;
   --mono: 'DM Mono', monospace;
 }
+
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
 
 body {
   font-family: var(--font);
@@ -33,278 +40,413 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 3rem 1.5rem;
+  justify-content: flex-start;
+  padding: clamp(2rem, 6vh, 5rem) 1.5rem 3rem;
+  position: relative;
+  overflow-x: hidden;
 }
 
-body::before {
-  content: '';
+/* ---- ambient background ---- */
+.bg-layer { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+.bg-grid {
   position: fixed; inset: 0; pointer-events: none; z-index: 0;
   background-image:
-    linear-gradient(rgba(0,229,160,0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,229,160,0.025) 1px, transparent 1px);
-  background-size: 52px 52px;
+    linear-gradient(rgba(120,160,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(120,160,255,0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 65% at 50% 0%, #000 30%, transparent 78%);
+          mask-image: radial-gradient(ellipse 80% 65% at 50% 0%, #000 30%, transparent 78%);
 }
-
-body::after {
-  content: '';
-  position: fixed; top: -25%; left: 50%; transform: translateX(-50%);
-  width: 90vw; height: 60vh; pointer-events: none; z-index: 0;
-  background: radial-gradient(ellipse, rgba(77,159,255,0.06) 0%, transparent 65%);
+.bg-glow-a {
+  position: fixed; top: -28%; left: 50%; transform: translateX(-50%);
+  width: 1100px; height: 700px; pointer-events: none; z-index: 0;
+  background: radial-gradient(ellipse, rgba(21,224,160,0.13) 0%, transparent 62%);
+  filter: blur(8px);
+}
+.bg-glow-b {
+  position: fixed; top: 6%; right: -12%;
+  width: 620px; height: 620px; pointer-events: none; z-index: 0;
+  background: radial-gradient(circle, rgba(77,159,255,0.10) 0%, transparent 65%);
 }
 
 .wrap {
-  position: relative; z-index: 1;
-  width: 100%; max-width: 900px;
+  position: relative; z-index: 2;
+  width: 100%; max-width: 1140px;
 }
 
-/* HEADER */
-header {
-  margin-bottom: 3.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  animation: fadeUp 0.5s ease both;
+/* ---------- TOP BAR ---------- */
+.topbar {
+  display: flex; align-items: center; gap: 1.1rem;
+  padding-bottom: 1.4rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2.6rem;
+  animation: fadeUp 0.55s ease both;
 }
 
 .logo-badge {
-  width: 56px; height: 56px;
-  background: linear-gradient(135deg, #00e5a0 0%, #4d9fff 100%);
-  border-radius: 16px;
-  display: flex; align-items: center; justify-content: center;
+  width: 60px; height: 60px;
+  border-radius: 17px;
   flex-shrink: 0;
-  font-family: var(--mono); font-size: 13px; font-weight: 500;
-  color: #080d16; letter-spacing: 0.5px;
-  box-shadow: 0 0 32px rgba(0,229,160,0.2);
+  position: relative;
+  display: flex; align-items: center; justify-content: center;
+  background:
+    linear-gradient(150deg, rgba(255,255,255,0.18), rgba(255,255,255,0) 45%),
+    linear-gradient(140deg, #15e0a0 0%, #2fb3ff 100%);
+  box-shadow: 0 10px 30px -8px rgba(21,224,160,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
 }
+.logo-badge svg { width: 30px; height: 30px; }
 
-.header-text h1 {
+.brand-text h1 {
   font-family: var(--display);
-  font-size: 24px; font-weight: 700;
-  letter-spacing: -0.5px; color: var(--text);
+  font-size: 22px; font-weight: 600;
+  letter-spacing: -0.4px; color: var(--text);
+  line-height: 1.1;
+}
+.brand-text .sub {
+  font-size: 13px; color: var(--text2);
+  margin-top: 4px; font-weight: 400;
 }
 
-.header-text p {
-  font-size: 12px; color: var(--muted);
-  margin-top: 3px; font-family: var(--mono);
+.topbar-right {
+  margin-left: auto;
+  display: flex; align-items: center; gap: 0.7rem;
+}
+.pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--mono); font-size: 11.5px; font-weight: 500;
+  padding: 7px 13px; border-radius: 999px;
+  border: 1px solid var(--border); background: rgba(255,255,255,0.025);
+  color: var(--text2); white-space: nowrap;
+}
+.pill .live {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--green); box-shadow: 0 0 0 0 rgba(21,224,160,0.5);
+  animation: pulse 2.2s infinite;
+}
+.pill.year { color: var(--text); letter-spacing: 0.5px; }
+
+/* ---------- HERO ---------- */
+.hero {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 2rem; flex-wrap: wrap;
+  margin-bottom: 2rem;
+  animation: fadeUp 0.55s 0.06s ease both;
+}
+.hero-left .eyebrow {
+  font-family: var(--mono); font-size: 11px; font-weight: 500;
+  letter-spacing: 2px; text-transform: uppercase; color: var(--green);
+  display: flex; align-items: center; gap: 9px;
+}
+.hero-left .eyebrow::before {
+  content: ''; width: 26px; height: 1px; background: var(--green); opacity: 0.6;
+}
+.hero-left h2 {
+  font-family: var(--display);
+  font-size: clamp(30px, 4vw, 42px); font-weight: 600;
+  letter-spacing: -1px; line-height: 1.08; margin-top: 14px;
+  color: var(--text);
+}
+.hero-left h2 b { color: var(--green); font-weight: 600; }
+
+.stats { display: flex; gap: 2.2rem; }
+.stat { text-align: right; }
+.stat .num {
+  font-family: var(--display); font-size: 32px; font-weight: 600;
+  color: var(--text); line-height: 1; letter-spacing: -0.5px;
+}
+.stat .lbl {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.6px;
+  text-transform: uppercase; color: var(--muted); margin-top: 8px;
 }
 
-/* GRID */
+/* ---------- GRID ---------- */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-  margin-bottom: 2.5rem;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 2.4rem;
 }
 
-/* CARD */
+/* ---------- CARD ---------- */
 .card {
-  background: var(--surface);
+  --accent: var(--green);
+  position: relative; overflow: hidden;
+  background: linear-gradient(180deg, var(--surface) 0%, var(--bg2) 100%);
   border: 1px solid var(--border);
-  border-radius: 22px;
-  padding: 1.75rem;
+  border-radius: 20px;
+  padding: 1.7rem 1.7rem 1.4rem;
   text-decoration: none;
   display: flex; flex-direction: column;
-  position: relative; overflow: hidden;
-  transition: border-color 0.25s, transform 0.2s, background 0.25s;
-  animation: fadeUp 0.5s ease both;
-  min-height: 200px;
+  min-height: 215px;
+  transition: border-color 0.28s, transform 0.28s cubic-bezier(.2,.7,.3,1), box-shadow 0.28s;
+  animation: fadeUp 0.6s ease both;
 }
-
-/* glow top line */
-.card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  opacity: 0; transition: opacity 0.25s;
-}
-
-/* glow bg blob */
-.card::after {
-  content: '';
-  position: absolute; top: -40px; right: -40px;
-  width: 130px; height: 130px; border-radius: 50%;
+.card::before { /* top accent line */
+  content: ''; position: absolute; top: 0; left: 1.7rem; right: 1.7rem; height: 2px;
+  background: linear-gradient(90deg, var(--accent), transparent 80%);
   opacity: 0; transition: opacity 0.3s;
-  filter: blur(40px);
 }
-
+.card::after { /* corner glow */
+  content: ''; position: absolute; top: -60px; right: -50px;
+  width: 180px; height: 180px; border-radius: 50%;
+  background: var(--accent); opacity: 0; filter: blur(60px);
+  transition: opacity 0.35s; pointer-events: none;
+}
 .card:hover {
   border-color: var(--border-h);
-  background: var(--surface2);
-  transform: translateY(-4px);
+  transform: translateY(-5px);
+  box-shadow: 0 24px 50px -22px rgba(0,0,0,0.8);
 }
-
 .card:hover::before { opacity: 1; }
-.card:hover::after  { opacity: 1; }
+.card:hover::after  { opacity: 0.16; }
 
-/* per-color accents */
-.c-green::before { background: linear-gradient(90deg, var(--green), transparent); }
-.c-green::after  { background: var(--green); }
-.c-blue::before  { background: linear-gradient(90deg, var(--blue), transparent); }
-.c-blue::after   { background: var(--blue); }
-.c-amber::before { background: linear-gradient(90deg, var(--amber), transparent); }
-.c-amber::after  { background: var(--amber); }
-.c-purple::before{ background: linear-gradient(90deg, var(--purple), transparent); }
-.c-purple::after { background: var(--purple); }
+.c-green  { --accent: var(--green); }
+.c-blue   { --accent: var(--blue); }
+.c-amber  { --accent: var(--amber); }
+.c-purple { --accent: var(--purple); }
 
-.card-delay-1 { animation-delay: 0.08s; }
-.card-delay-2 { animation-delay: 0.16s; }
-.card-delay-3 { animation-delay: 0.24s; }
-.card-delay-4 { animation-delay: 0.32s; }
-
-/* card inner */
-.card-top { margin-bottom: auto; }
-
-.card-icon {
-  width: 46px; height: 46px; border-radius: 13px;
-  display: flex; align-items: center; justify-content: center;
-  margin-bottom: 1.25rem;
+.card-head {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 1.35rem;
 }
-.ig { background: rgba(0,229,160,0.1); }
-.ib { background: rgba(77,159,255,0.1); }
-.ia { background: rgba(255,184,77,0.1); }
-.ip { background: rgba(167,139,250,0.1); }
+.card-icon {
+  width: 50px; height: 50px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  background:
+    linear-gradient(160deg, color-mix(in srgb, var(--accent) 22%, transparent), color-mix(in srgb, var(--accent) 6%, transparent));
+  border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+}
+.card-icon svg { width: 24px; height: 24px; }
 
 .card-tag {
-  font-family: var(--mono); font-size: 10px;
-  padding: 3px 9px; border-radius: 5px;
-  margin-bottom: 10px; display: inline-block;
-  font-weight: 500; letter-spacing: 0.5px;
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.8px;
+  padding: 5px 10px; border-radius: 7px;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  white-space: nowrap;
 }
-.tg { background: rgba(0,229,160,0.1); color: var(--green); }
-.tb { background: rgba(77,159,255,0.1); color: var(--blue); }
-.ta { background: rgba(255,184,77,0.1); color: var(--amber); }
-.tp { background: rgba(167,139,250,0.1); color: var(--purple); }
 
-.card h2 {
+.card-title {
   font-family: var(--display);
-  font-size: 18px; font-weight: 700;
-  color: var(--text); margin-bottom: 6px; letter-spacing: -0.3px;
+  font-size: 21px; font-weight: 600;
+  color: var(--text); letter-spacing: -0.4px;
+  margin-bottom: 7px;
 }
-
-.card p {
-  font-size: 12.5px; color: var(--muted);
-  line-height: 1.6; margin-bottom: 1.5rem;
+.card-desc {
+  font-size: 13.5px; color: var(--text2); line-height: 1.55;
+  margin-bottom: 1.3rem;
 }
+.card-desc .org { color: var(--muted); }
 
 .card-footer {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 11px; color: var(--muted); font-family: var(--mono);
-  border-top: 1px solid var(--border); padding-top: 1rem; margin-top: auto;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--muted); font-family: var(--mono);
+  border-top: 1px solid var(--border); padding-top: 1.05rem; margin-top: auto;
 }
-
-.dot {
+.status {
+  display: inline-flex; align-items: center; gap: 7px;
+  color: var(--text2);
+}
+.status .dot {
   width: 7px; height: 7px; border-radius: 50%;
-  display: inline-block; flex-shrink: 0;
+  background: var(--accent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 80%, transparent);
 }
-
-.arrow-icon { margin-left: auto; flex-shrink: 0; }
-
-/* GITHUB LINK */
-.github-link {
-  display: flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 0.8rem 1.25rem;
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 14px; text-decoration: none; color: var(--muted);
-  font-size: 12px; font-family: var(--mono);
-  transition: border-color 0.2s, color 0.2s;
-  animation: fadeUp 0.5s 0.4s ease both;
+.open-cta {
+  margin-left: auto;
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--text2); font-weight: 500;
+  transition: color 0.2s, gap 0.2s;
 }
-.github-link:hover { border-color: var(--border-h); color: var(--text); }
+.open-cta svg { transition: transform 0.25s; }
+.card:hover .open-cta { color: var(--text); gap: 9px; }
+.card:hover .open-cta svg { transform: translate(2px,-2px); }
+
+/* ---------- FOOTER ---------- */
+.footer {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 1rem;
+  padding-top: 1.6rem; border-top: 1px solid var(--border);
+  animation: fadeUp 0.55s 0.4s ease both;
+}
+.footer .credit {
+  font-size: 12px; color: var(--muted); font-family: var(--mono);
+}
+.gh {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 9px 15px;
+  background: rgba(255,255,255,0.025); border: 1px solid var(--border);
+  border-radius: 11px; text-decoration: none; color: var(--text2);
+  font-size: 12.5px; font-family: var(--mono);
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+.gh:hover { border-color: var(--border-h); color: var(--text); background: rgba(255,255,255,0.05); }
+
+/* ---------- animations ---------- */
+.d1 { animation-delay: 0.12s; }
+.d2 { animation-delay: 0.2s; }
+.d3 { animation-delay: 0.28s; }
+.d4 { animation-delay: 0.36s; }
 
 @keyframes fadeUp {
-  from { opacity: 0; transform: translateY(18px); }
+  from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(21,224,160,0.45); }
+  70%  { box-shadow: 0 0 0 7px rgba(21,224,160,0); }
+  100% { box-shadow: 0 0 0 0 rgba(21,224,160,0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; }
+}
 
-@media (max-width: 560px) {
+@media (max-width: 880px) {
   .grid { grid-template-columns: 1fr; }
-  header { flex-direction: column; gap: 0.75rem; }
+  .hero { align-items: flex-start; }
+  .stats { gap: 1.6rem; }
+}
+@media (max-width: 560px) {
+  .topbar { flex-wrap: wrap; }
+  .topbar-right { margin-left: 0; width: 100%; }
+  .stat { text-align: left; }
 }
 </style>
 </head>
 <body>
+<div class="bg-glow-a"></div>
+<div class="bg-glow-b"></div>
+<div class="bg-grid"></div>
+
 <div class="wrap">
 
-  <header>
-    <div class="logo-badge">SESMT</div>
-    <div class="header-text">
-      <h1>Painel de Projetos</h1>
-      <p>anjossidnei-code · github.com</p>
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="logo-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#07120e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <path d="m9 12 2 2 4-4"/>
+      </svg>
     </div>
-  </header>
+    <div class="brand-text">
+      <h1>Painel SESMT</h1>
+      <span class="sub">Segurança e Saúde no Trabalho · Gestão de Documentos</span>
+    </div>
+    <div class="topbar-right">
+      <span class="pill"><span class="live"></span> Sistemas online</span>
+      <span class="pill year">Ciclo 2026</span>
+    </div>
+  </div>
 
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-left">
+      <div class="eyebrow">Documentos ativos</div>
+      <h2>Programas e análises<br><b>de gerenciamento de risco</b></h2>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="num">04</div>
+        <div class="lbl">Documentos</div>
+      </div>
+      <div class="stat">
+        <div class="num">03</div>
+        <div class="lbl">Empresas</div>
+      </div>
+      <div class="stat">
+        <div class="num">100%</div>
+        <div class="lbl">Atualizados</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRID -->
   <div class="grid">
 
     <!-- VIPOL -->
-    <a class="card c-green card-delay-1" href="https://pgr-vipol-2026.vercel.app" target="_blank">
-      <div class="card-top">
-        <div class="card-icon ig">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#00e5a0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    <a class="card c-green d1" href="https://pgr-vipol-2026.vercel.app" target="_blank" rel="noopener">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         </div>
-        <span class="card-tag tg">PGR · 2026</span>
-        <h2>VIPOL</h2>
-        <p>Programa de Gerenciamento de Risco<br>VIPOL Transportes Rodoviários Ltda.</p>
+        <span class="card-tag">PGR · 2026</span>
       </div>
+      <div class="card-title">VIPOL</div>
+      <div class="card-desc">Programa de Gerenciamento de Risco<br><span class="org">VIPOL Transportes Rodoviários Ltda.</span></div>
       <div class="card-footer">
-        <span class="dot" style="background:#f1c453;"></span> HTML · Vercel
-        <svg class="arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <span class="status"><span class="dot"></span> Ativo</span>
+        <span class="open-cta">Abrir documento
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+        </span>
       </div>
     </a>
 
     <!-- VMP PGR -->
-    <a class="card c-blue card-delay-2" href="https://pgr-vmp-2026.vercel.app" target="_blank">
-      <div class="card-top">
-        <div class="card-icon ib">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4d9fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+    <a class="card c-blue d2" href="https://pgr-vmp-2026.vercel.app" target="_blank" rel="noopener">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
-        <span class="card-tag tb">PGR · 2026</span>
-        <h2>VMP</h2>
-        <p>Programa de Gerenciamento de Risco<br>Viação Metrópole Paulista</p>
+        <span class="card-tag">PGR · 2026</span>
       </div>
+      <div class="card-title">VMP</div>
+      <div class="card-desc">Programa de Gerenciamento de Risco<br><span class="org">Viação Metrópole Paulista</span></div>
       <div class="card-footer">
-        <span class="dot" style="background:#f1c453;"></span> HTML · Vercel
-        <svg class="arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <span class="status"><span class="dot"></span> Ativo</span>
+        <span class="open-cta">Abrir documento
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+        </span>
       </div>
     </a>
 
     <!-- AEP VMP -->
-    <a class="card c-amber card-delay-3" href="https://aep-vmp.vercel.app" target="_blank">
-      <div class="card-top">
-        <div class="card-icon ia">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffb84d" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
+    <a class="card c-amber d3" href="https://aep-vmp.vercel.app" target="_blank" rel="noopener">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>
         </div>
-        <span class="card-tag ta">AEP</span>
-        <h2>Ergonomia · VMP</h2>
-        <p>Análise Ergonômica Preliminar<br>Viação Metrópole Paulista</p>
+        <span class="card-tag">AEP</span>
       </div>
+      <div class="card-title">Ergonomia · VMP</div>
+      <div class="card-desc">Análise Ergonômica Preliminar<br><span class="org">Viação Metrópole Paulista</span></div>
       <div class="card-footer">
-        <span class="dot" style="background:#f1c453;"></span> HTML · Vercel
-        <svg class="arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <span class="status"><span class="dot"></span> Ativo</span>
+        <span class="open-cta">Abrir documento
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+        </span>
       </div>
     </a>
 
-    <!-- PRG CITY 2026 -->
-    <a class="card c-purple card-delay-4" href="https://prg-city-2026.vercel.app" target="_blank">
-      <div class="card-top">
-        <div class="card-icon ip">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
+    <!-- CITY 2026 -->
+    <a class="card c-purple d4" href="https://prg-city-2026.vercel.app" target="_blank" rel="noopener">
+      <div class="card-head">
+        <div class="card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7"/></svg>
         </div>
-        <span class="card-tag tp">PGR · 2026</span>
-        <h2>CITY 2026</h2>
-        <p>Programa de Gerenciamento de Risco<br>City · Segurança e Saúde no Trabalho</p>
+        <span class="card-tag">PGR · 2026</span>
       </div>
+      <div class="card-title">CITY 2026</div>
+      <div class="card-desc">Programa de Gerenciamento de Risco<br><span class="org">City · Segurança e Saúde no Trabalho</span></div>
       <div class="card-footer">
-        <span class="dot" style="background:#f1c453;"></span> HTML · Vercel
-        <svg class="arrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <span class="status"><span class="dot"></span> Ativo</span>
+        <span class="open-cta">Abrir documento
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>
+        </span>
       </div>
     </a>
 
   </div>
 
-  <a class="github-link" href="https://github.com/anjossidnei-code" target="_blank">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
-    github.com/anjossidnei-code
-  </a>
+  <!-- FOOTER -->
+  <div class="footer">
+    <span class="credit">© 2026 · Painel SESMT — anjossidnei-code</span>
+    <a class="gh" href="https://github.com/anjossidnei-code" target="_blank" rel="noopener">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      github.com/anjossidnei-code
+    </a>
+  </div>
 
 </div>
 </body>
